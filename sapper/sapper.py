@@ -3,7 +3,7 @@ import pygame_gui
 import pygame
 import os, sys
 
-SIZE_SP = 50
+SIZE_SP = 30
 
 def load_image(name, colorkey=None) -> pygame.Surface:
     pygame.init()
@@ -21,6 +21,51 @@ def load_image(name, colorkey=None) -> pygame.Surface:
         else:
             image = image.convert_alpha()
     return image
+
+def drow_map():
+    global level, level_map, min, max_x, max_y, screen
+    screen.fill(pygame.Color('white'))
+    pygame.draw.rect(screen, (0, 0, 0), (15, 3 * SIZE_SP, max_x  * SIZE_SP, max_y * SIZE_SP), 2)
+    for i in range(max_x):
+        for j in range(max_y):
+            pygame.draw.rect(screen, (0, 0, 0), (15 + i * SIZE_SP, 3 * SIZE_SP + j * SIZE_SP, SIZE_SP, SIZE_SP), 2)
+            pygame.draw.rect(screen, (190, 190, 190), (15 + i * SIZE_SP, 3 * SIZE_SP + j * SIZE_SP, SIZE_SP-2, SIZE_SP-2))
+
+    pygame.display.flip()
+    game()
+
+def game():
+    run = True
+    while run:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+                run = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    x, y = event.pos
+                    y = (y - 3 * SIZE_SP) // SIZE_SP 
+                    x = (x -15) // SIZE_SP
+                    pygame.draw.rect(screen, (255, 255, 255), (15 + x * SIZE_SP, 3 * SIZE_SP + y * SIZE_SP, SIZE_SP-2, SIZE_SP-2))
+                    text = my_font.render(level_map[y][x], False, (0, 0, 0))
+                    if level_map[y][x] == '*':
+                        pygame.draw.rect(screen, (255, 0, 0), (15 + x * SIZE_SP, 3 * SIZE_SP + y * SIZE_SP, SIZE_SP-2, SIZE_SP-2))
+                        screen.blit(text, (23 +  SIZE_SP * x, SIZE_SP * (y + 3) - 4))
+                        pygame.display.update()
+                        game_over(x, y)    
+                    screen.blit(text, (23 +  SIZE_SP * x, SIZE_SP * (y + 3) - 4))
+                    pygame.display.update()
+
+def game_over(x, y):
+        for i in range(max_x):
+            for j in range(max_y):
+                if level_map[i][j] == '*' and i != y and j != x:
+                    text = my_font.render(level_map[i][j], False, (0, 0, 0))
+                    pygame.draw.rect(screen, (255, 255, 255), (15 + i * SIZE_SP, 3 * SIZE_SP + j * SIZE_SP, SIZE_SP-2, SIZE_SP-2))
+                    screen.blit(text, (23 +  SIZE_SP * i, SIZE_SP * (j + 3) - 4))
+                    pygame.display.update()
+                
+
 
 def start_screen():
     global level, level_map, min, max_x, max_y, screen
@@ -45,24 +90,18 @@ def start_screen():
                 if event.ui_element == easy_button:
                     level = 1
                     button = False
-                    max_x = 15
-                    max_y = 15
                     min = 45
                     create_level(max_x, max_y)
-                    screen = pygame.display.set_mode(((max_x + 1) * SIZE_SP, (max_y + 1) * SIZE_SP))
-                    print (level_map)
                 if event.ui_element == standart_button:
                     level = 2
                     button = False
                     min = 100
                     create_level(max_x, max_y)
-                    screen = pygame.display.set_mode(((max_x + 1) * SIZE_SP, (max_y + 1) * SIZE_SP))
                 if event.ui_element == hard_button:
                     level = 3
                     button = False
                     min = 145
                     create_level(max_x, max_y)
-                    screen = pygame.display.set_mode(((max_x + 1) * SIZE_SP, (max_y + 1) * SIZE_SP))
                 if event.ui_element == rezult_button:
                     level = 4
                 if event.ui_element == nastr_button:
@@ -70,9 +109,13 @@ def start_screen():
         manager.draw_ui(screen)    
         pygame.display.update()
         manager.update(time_delta)
+    for i in range(max_x):
+        for j in range(max_y):
+            level_map[i][j] = str(level_map[i][j])
+    
+    drow_map()
 
 def terminate():
-    print(123)
     sys.exit
 
 def create_level(w, h):
@@ -98,10 +141,19 @@ def create_level(w, h):
             
             else:
                 level_map[x1][y1] += 1
+    screen = pygame.display.set_mode(((max_x + 1) * SIZE_SP, (max_y + 4) * SIZE_SP))
 
 if __name__ == '__main__':
     pygame.init()
-    SCORE = 0
-    #my_font = pygame.font.SysFont(None, 30)
+    #mine_group = pygame.sprite.Group
+    my_font = pygame.font.SysFont("arial", 30)
     screen = pygame.display.set_mode((250, 200))
+    max_x = 15
+    max_y = 15
     start_screen()
+    w = True
+    #while w:
+        #for event in pygame.event.get():
+            #if event.type == pygame.QUIT:
+                #w = False
+    
