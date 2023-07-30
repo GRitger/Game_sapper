@@ -70,7 +70,7 @@ def game():
                     Pause = False
                     start = time.time() - sec
 
-            elif event.type == pygame.MOUSEBUTTONDOWN:
+            elif event.type == pygame.MOUSEBUTTONDOWN and Pause == False:
                 x, y = event.pos
                 if 200 < x  < 250 and 20 < y < 70:
                     game_over(x, y, mina)
@@ -171,17 +171,17 @@ def start_screen():
                     if event.ui_element == easy_button:
                         level = 1
                         button = False
-                        min = col_flag = 45
+                        min = col_flag = 30
                         create_level(max_x, max_y)
                     if event.ui_element == standart_button:
                         level = 2
                         button = False
-                        min = col_flag = 100
+                        min = col_flag = 50
                         create_level(max_x, max_y)
                     if event.ui_element == hard_button:
                         level = 3
                         button = False
-                        min = col_flag = 145
+                        min = col_flag = 100
                         create_level(max_x, max_y)
                     if event.ui_element == rezult_button:
                         level = 4
